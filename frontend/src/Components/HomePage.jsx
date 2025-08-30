@@ -128,7 +128,7 @@ const HomePage = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/v1/message/${selectedUser._id}`,
+          `https://dczone.onrender.com/api/v1/message/${selectedUser._id}`,
           {
             withCredentials: true,
           }
@@ -197,7 +197,7 @@ const HomePage = () => {
         socket.emit("logout", { userId: authUser._id });
       }
       
-  await axios.get(`http://localhost:8080/api/v1/user/logout`, {
+  await axios.get(`https://dczone.onrender.com/api/v1/user/logout`, {
         withCredentials: true,
       });
       

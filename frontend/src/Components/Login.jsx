@@ -17,7 +17,7 @@ const Login = () => {
         e.preventDefault()
         try {
             const res = await axios.post(
-                `http://localhost:8080/api/v1/user/login`,
+                `https://dczone.onrender.com/api/v1/user/login`,
                 user,
                 {
                     headers: {

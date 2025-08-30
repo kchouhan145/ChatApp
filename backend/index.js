@@ -18,8 +18,14 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(cookieParser());
 const corsOption = {
-    origin: process.env.CLIENT_URL,
-    credentials: true
+  origin: [
+    "http://localhost:5173",   // if using Vite
+    "http://localhost:3000",   // if using CRA
+    "http://localhost:8080",   // your local test port
+    "https://dczone.onrender.com" // deployed frontend
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 };
 app.use(cors(corsOption));
 
