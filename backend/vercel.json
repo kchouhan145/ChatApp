@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "env": {
+    "MONGO_URI": "mongodb+srv://k1452003:skwgWI21bs2sGEzK@flyzeapp.orhey5p.mongodb.net/",
+    "PORT": "8080",
+    "JWT_KEY": "askflsadjfkskadskldfsdlkdfksl"
+  },
+  "routes": [
+    { "src": "/(.*)", "dest": "index.js" }
+  ]
+}
