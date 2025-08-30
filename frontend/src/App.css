@@ -1,0 +1,33 @@
+/* Custom styles for ChatApp */
+
+/* Fix for chat bubbles and arrow positioning during scrolling */
+.chat-arrow-fix {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+
+.chat-arrow-fix .chat-image {
+  position: absolute !important;
+  z-index: 2;
+}
+
+/* Override DaisyUI default chat bubble arrow behavior to make it more stable during scrolling */
+.chat-arrow-fix .chat-bubble:before {
+  display: none !important;
+}
+
+/* Message container styling */
+.chat-messages-container {
+  position: relative;
+}
+
+/* Ensure chat items have proper positioning context */
+.chat-messages-container .chat {
+  transform: translateZ(0); /* Create a new stacking context */
+  will-change: transform; /* Hint to browser about optimizations */
+}
+
+/* Ensure the avatar position is fixed relative to each chat item */
+.chat-arrow-fix .chat-image.avatar {
+  transform: translateZ(0); /* Prevent position shifting during scrolling */
+}
