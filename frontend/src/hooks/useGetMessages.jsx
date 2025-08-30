@@ -11,7 +11,7 @@ const useGetMessages = () => {
             try {
                 axios.defaults.withCredentials = true;
                 console.log(selectedUser);
-                const res = await axios.get(`https://chat-kartik-backend.vercel.app/api/v1/message/${selectedUser?._id}`);
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/message/${selectedUser?._id}`);
                 console.log(res);
                 dispatch(setMessages(res.data.messages));
             } catch (error) {

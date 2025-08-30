@@ -32,7 +32,7 @@ function App() {
       console.log("Attempting to create socket connection...");
       // Create socket connection
       try {
-  const socketInstance = io(`https://chat-kartik-backend.vercel.app/`, {
+  const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
           withCredentials: true,
           reconnection: true,
           reconnectionDelay: 1000,

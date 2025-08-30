@@ -9,7 +9,7 @@ const useGetOtherUsers = () => {
         const fetchOtherUsers = async () => {
             try {
                 axios.defaults.withCredentials = true;
-                const res = await axios.get(`https://chat-kartik-backend.vercel.app/api/v1/user/`);
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/`);
                 // console.log(res);
                 dispatch(setOtherUsers(res.data));               
             } catch (error) {

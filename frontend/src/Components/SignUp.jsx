@@ -25,7 +25,7 @@ const SignUp = () => {
 
         try {
             const res = await axios.post(
-                `https://chat-kartik-backend.vercel.app/api/v1/user/register`,
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/register`,
                 user,
                 {
                     headers: {
