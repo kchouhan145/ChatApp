@@ -14,14 +14,19 @@ const PORT = process.env.PORT || 8080;
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(cookieParser());
-const corsOption={
-    origin:'http://localhost:5173',
-    credentials:true
-}
+const corsOption = {
+    origin: process.env.CLIENT_URL,
+    credentials: true
+};
 app.use(cors(corsOption));
 
 app.use("/api/v1/user",userRoute);
-app.use("/api/v1/message",messageRoute);
+app.use("/api/v1/message", messageRoute);
+
+// Home route to indicate backend is running
+app.get("/", (req, res) => {
+    res.send("Backend is running");
+});
 
 // Create Socket.IO server
 const { server } = createSocketServer(app);

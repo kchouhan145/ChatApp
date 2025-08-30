@@ -119,7 +119,7 @@ const ChatSection = ({
       if (messagesEndRef.current) {
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
-      const res = await axios.post(`http://localhost:8080/api/v1/message/send/${selectedUser?._id}`, {
+      const res = await axios.post(`https://chat-kartik-backend.vercel.app/api/v1/message/send/${selectedUser?._id}`, {
         message: messageToSend
       }, {
         headers: {
