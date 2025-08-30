@@ -25,7 +25,7 @@ const SignUp = () => {
 
         try {
             const res = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/register`,
+                `http://localhost:8080/api/v1/user/register`,
                 user,
                 {
                     headers: {

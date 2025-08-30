@@ -32,7 +32,7 @@ function App() {
       console.log("Attempting to create socket connection...");
       // Create socket connection
       try {
-  const socketInstance = io(import.meta.env.VITE_BACKEND_URL, {
+  const socketInstance = io("http://localhost:8080", {
           withCredentials: true,
           reconnection: true,
           reconnectionDelay: 1000,

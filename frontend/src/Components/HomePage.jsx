@@ -128,7 +128,7 @@ const HomePage = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/message/${selectedUser._id}`,
+          `http://localhost:8080/api/v1/message/${selectedUser._id}`,
           {
             withCredentials: true,
           }
@@ -197,7 +197,7 @@ const HomePage = () => {
         socket.emit("logout", { userId: authUser._id });
       }
       
-  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/logout`, {
+  await axios.get(`http://localhost:8080/api/v1/user/logout`, {
         withCredentials: true,
       });
       
