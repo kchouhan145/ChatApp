@@ -61,7 +61,7 @@ const SignUp = () => {
                                 value={user.fullName}
                                 onChange={(e) => setUser({ ...user, fullName: e.target.value })}
                                 placeholder="Enter your name"
-                                className="input input-bordered w-full"
+                                className="input input-bordered w-full focus:outline-none"
                                 required
                             />
                         </div>
@@ -76,7 +76,7 @@ const SignUp = () => {
                                 value={user.username}
                                 onChange={(e) => setUser({ ...user, username: e.target.value })}
                                 placeholder="Enter Username"
-                                className="input input-bordered w-full"
+                                className="input input-bordered w-full focus:outline-none"
                                 required
                             />
                         </div>
@@ -91,7 +91,7 @@ const SignUp = () => {
                                 value={user.password}
                                 onChange={(e) => setUser({ ...user, password: e.target.value })}
                                 placeholder="Enter your password"
-                                className="input input-bordered w-full"
+                                className="input input-bordered w-full focus:outline-none"
                                 required
                             />
                         </div>
@@ -106,7 +106,7 @@ const SignUp = () => {
                                 value={user.confirmPassword}
                                 onChange={(e) => setUser({ ...user, confirmPassword: e.target.value })}
                                 placeholder="Confirm your password"
-                                className="input input-bordered w-full"
+                                className="input input-bordered w-full focus:outline-none"
                                 required
                             />
                         </div>

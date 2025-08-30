@@ -231,7 +231,7 @@ const HomePage = () => {
         <div className="navbar container mx-auto px-4 h-16">
           <div className="navbar-start">
             <h1 className="text-xl font-bold flex items-center gap-2">
-              <span className="text-white">ChatApp</span>
+              <span className="text-white">DC Zone</span>
             </h1>
           </div>
           <div className="navbar-end flex items-center gap-4">
@@ -265,7 +265,7 @@ const HomePage = () => {
               <input
                 type="text"
                 placeholder="Search users..."
-                className="input input-bordered w-full pr-10"
+                className="input input-bordered w-full pr-10 focus:outline-none"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
