@@ -4,6 +4,8 @@ import axios from 'axios'
 import { toast } from 'sonner';
 
 const SignUp = () => {
+    const [newPassword, setNewPassword] = useState('');
+    const [isValid, setIsValid] = useState(false);
     const navigate = useNavigate()
     const [user, setUser] = useState({
         fullName: "",
@@ -12,6 +14,13 @@ const SignUp = () => {
         confirmPassword: "",
         gender: "male"
     });
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const handlePasswordChange = (event) => {
+        const newPassword = event.target.value;
+        setNewPassword(newPassword);
+        setIsValid(strongPasswordRegex.test(newPassword));
+        setUser({ ...user, password: event.target.value });
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -94,7 +103,7 @@ const SignUp = () => {
                                     type="password"
                                     name="password"
                                     value={user.password}
-                                    onChange={(e) => setUser({ ...user, password: e.target.value })}
+                                    onChange={handlePasswordChange}
                                     placeholder="Enter your password"
                                     className="input input-bordered w-full focus:outline-none"
                                     required
@@ -145,6 +154,13 @@ const SignUp = () => {
                                     </label>
                                 </div>
                             </div>
+                            {newPassword && (
+                                isValid ? (
+                                    <p style={{ color: 'green' }}>Password is strong!</p>
+                                ) : (
+                                    <p style={{ color: 'red' }}>Password does not meet requirements.</p>
+                                )
+                            )}
 
                             <button type="submit" className="btn btn-primary w-full mt-5 sm:mt-6">
                                 Sign Up
