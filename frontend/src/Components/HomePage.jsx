@@ -7,7 +7,7 @@ import { SocketContext, OnlineUsersContext } from "../App";
 import ChatSection from "./ChatSection";
 import useGetOtherUsers from "../hooks/useGetOtherUsers";
 import { setSelectedUsers } from "../redux/userSlice";
-import { setMessages, addMessage, updateMessage } from "../redux/messageSlice";
+// import { setMessages, addMessage, updateMessage } from "../redux/messageSlice";
 
 const HomePage = () => {
   // Redux
@@ -27,6 +27,7 @@ const HomePage = () => {
   const [unreadCounts, setUnreadCounts] = useState({});
   const [loading, setLoading] = useState(false);
   const [showMobileChat, setShowMobileChat] = useState(false);
+  const [showLogoutMobile, setShowLogoutMobile] = useState(false);
 
   // Fetch other users
   useGetOtherUsers();
@@ -236,22 +237,39 @@ const HomePage = () => {
           </div>
           <div className="navbar-end flex items-center gap-4">
             <div className="flex flex-col items-end mr-2">
-              <span className="font-medium text-white">{authUser?.fullName}</span>
+              <span className="font-medium md:text-xl text-xs text-white">{authUser?.fullName}</span>
               <span className="text-xs opacity-80 text-white">@{authUser?.username}</span>
             </div>
+            {/* Desktop: show logout button */}
             <button
               onClick={handleLogout}
-              className="btn btn-error btn-sm flex items-center gap-2"
+              className="btn btn-error btn-sm flex items-center gap-2 hidden md:flex"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
               Logout
             </button>
-            <div className="avatar ml-2">
-              <div className="w-10 rounded-full">
+            {/* Mobile: show profile photo, toggle logout button on click */}
+            <div className="avatar ml-2 relative md:static">
+              <div
+                className="w-10 rounded-full cursor-pointer md:cursor-default"
+                onClick={() => setShowLogoutMobile((prev) => !prev)}
+              >
                 <img alt={authUser?.username} src={authUser?.profilePhoto} />
               </div>
+              {/* Mobile logout button dropdown */}
+              {showLogoutMobile && (
+                <button
+                  onClick={handleLogout}
+                  className="btn btn-error btn-sm flex items-center gap-2 absolute right-0 top-12 z-20 md:hidden"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Logout
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -29,15 +29,20 @@ const Login = () => {
             // console.log("Server Response:", res.data);
             dispatch(setAuthUser(res.data));
             // console.log(res.data);
+            // Error handling for unsuccessful login is done in the catch block below
             if (res.data) {
                 navigate("/");
                 toast.success(`Welcome ${res.data.username}`);
             }
         } catch (error) {
             console.error("Error during login:", error);
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("Login failed. Please try again.");
+            }
         }
     }
-
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center px-4 py-6">
             <div className='pb-2 bg-[#5754E8] md:w-98 rounded-b-lg shadow-xl rounded-t-lg'>
