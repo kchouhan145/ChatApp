@@ -1,4 +1,5 @@
 import { User } from "../models/userModel.js";
+import { Conversation } from "../models/conversationModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -83,9 +84,68 @@ export const logout = (req, res) => {
 export const getOtherUsers = async (req, res) => {
     try {
         const loggedInUserId = req.id;
-        const ohterUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
-        return res.status(200).json(ohterUsers);
+        
+        // Find all conversations where the logged-in user is a participant
+        const conversations = await Conversation.find({
+            participants: { $in: [loggedInUserId] }
+        }).populate('participants', '-password');
+        
+        // If no conversations exist, return empty array
+        if (!conversations || conversations.length === 0) {
+            return res.status(200).json([]);
+        }
+        
+        // Extract other users from conversations (excluding the logged-in user)
+        const otherUsers = [];
+        const userIds = new Set();
+        
+        conversations.forEach(conversation => {
+            conversation.participants.forEach(participant => {
+                if (participant._id.toString() !== loggedInUserId.toString() && !userIds.has(participant._id.toString())) {
+                    userIds.add(participant._id.toString());
+                    otherUsers.push(participant);
+                }
+            });
+        });
+        
+        return res.status(200).json(otherUsers);
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+// Alternative endpoint to get all users (for starting new conversations)
+export const getAllUsers = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        const allUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
+        return res.status(200).json(allUsers);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+// Search users by username for starting new conversations
+export const searchUsersByUsername = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        const { username } = req.query;
+        
+        if (!username || username.trim() === "") {
+            return res.status(400).json({ message: "Username is required for search" });
+        }
+        
+        // Search for users by username (case-insensitive, partial match)
+        const users = await User.find({
+            _id: { $ne: loggedInUserId },
+            username: { $regex: username.trim(), $options: 'i' }
+        }).select("-password").limit(10); // Limit to 10 results
+        
+        return res.status(200).json(users);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
     }
 }

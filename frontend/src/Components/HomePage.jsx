@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { SocketContext, OnlineUsersContext } from "../App";
 import ChatSection from "./ChatSection";
 import useGetOtherUsers from "../hooks/useGetOtherUsers";
+import useSearchUsers from "../hooks/useSearchUsers";
 import { setSelectedUsers } from "../redux/userSlice";
 // import { setMessages, addMessage, updateMessage } from "../redux/messageSlice";
 
@@ -28,9 +29,13 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [showLogoutMobile, setShowLogoutMobile] = useState(false);
+  const [isSearchingNewUsers, setIsSearchingNewUsers] = useState(false);
 
   // Fetch other users
   useGetOtherUsers();
+
+  // Search functionality for new users
+  const { searchResults, isSearching, searchError, searchUsers, clearSearch } = useSearchUsers();
 
   // Socket handlers for real-time features
   useEffect(() => {
@@ -191,6 +196,31 @@ const HomePage = () => {
       )
     : [];
 
+  // Handle search for new users
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    // If searching for new users and query is not empty, search for new users
+    if (isSearchingNewUsers && query.trim()) {
+      searchUsers(query);
+    } else {
+      clearSearch();
+    }
+  };
+
+  // Toggle between existing conversations and searching new users
+  const toggleSearchMode = () => {
+    setIsSearchingNewUsers(!isSearchingNewUsers);
+    setSearchQuery("");
+    clearSearch();
+  };
+
+  // Users to display based on search mode
+  const usersToDisplay = isSearchingNewUsers 
+    ? (searchQuery.trim() ? searchResults : [])
+    : filteredUsers;
+
   // Handle logout
   const handleLogout = async () => {
     try {
@@ -279,13 +309,27 @@ const HomePage = () => {
         <div className={`bg-base-100 rounded-lg shadow-md w-full md:w-1/3 flex flex-col overflow-hidden ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
           {/* Search */}
           <div className="p-4 border-b">
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={toggleSearchMode}
+                className={`btn btn-sm flex-1 ${!isSearchingNewUsers ? 'btn-primary' : 'btn-outline'}`}
+              >
+                Conversations
+              </button>
+              <button
+                onClick={toggleSearchMode}
+                className={`btn btn-sm flex-1 ${isSearchingNewUsers ? 'btn-primary' : 'btn-outline'}`}
+              >
+                New Chat
+              </button>
+            </div>
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search users..."
+                placeholder={isSearchingNewUsers ? "Search by username..." : "Search conversations..."}
                 className="input input-bordered w-full pr-10 focus:outline-none"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
               />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -302,12 +346,18 @@ const HomePage = () => {
                 />
               </svg>
             </div>
+            {isSearchingNewUsers && isSearching && (
+              <div className="text-sm text-gray-500 mt-2">Searching...</div>
+            )}
+            {isSearchingNewUsers && searchError && (
+              <div className="text-sm text-red-500 mt-2">{searchError}</div>
+            )}
           </div>
 
           {/* Users List */}
           <div className="flex-1 overflow-y-auto">
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map((user) => {
+            {usersToDisplay.length > 0 ? (
+              usersToDisplay.map((user) => {
                 const isUserOnline = onlineUsers.includes(user._id);
                 const lastMessage = lastMessages[user._id];
                 const unreadCount = unreadCounts[user._id] || 0;
@@ -339,7 +389,9 @@ const HomePage = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <p className="text-sm opacity-70 truncate">
-                          {typingUsers.includes(user._id) ? (
+                          {isSearchingNewUsers ? (
+                            `@${user.username}`
+                          ) : typingUsers.includes(user._id) ? (
                             <span className="text-primary">Typing...</span>
                           ) : lastMessage ? (
                             lastMessage.message
@@ -347,7 +399,7 @@ const HomePage = () => {
                             `@${user.username}`
                           )}
                         </p>
-                        {unreadCount > 0 && (
+                        {!isSearchingNewUsers && unreadCount > 0 && (
                           <span className="badge badge-sm badge-primary">{unreadCount}</span>
                         )}
                       </div>
@@ -357,9 +409,17 @@ const HomePage = () => {
               })
             ) : (
               <div className="p-4 text-center opacity-70">
-                {searchQuery
-                  ? "No users found matching your search"
-                  : "No users available"}
+                {isSearchingNewUsers ? (
+                  searchQuery.trim() ? (
+                    isSearching ? "Searching..." : "No users found matching your search"
+                  ) : (
+                    "Enter a username to search for new users"
+                  )
+                ) : (
+                  searchQuery
+                    ? "No conversations found matching your search"
+                    : "No conversations yet. Use 'New Chat' to start one!"
+                )}
               </div>
             )}
           </div>

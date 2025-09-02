@@ -28,8 +28,11 @@ const SignUp = () => {
 
         // Basic validation
         if (user.password !== user.confirmPassword) {
-            console.log("Passwords do not match!");
+            toast.error("Passwords do not match!");
             return;
+        }
+        if(!isValid){
+            toast.error("Password is not valid");
         }
 
         try {
