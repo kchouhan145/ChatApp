@@ -27,9 +27,9 @@ const ChatSection = ({
   const socket = useContext(SocketContext);
   const [showPicker, setShowPicker] = useState(false);
 
-  const onEmojiClick = (event, emojiObject) => {
-    setNewMessage(prevText => prevText + emojiObject.emoji);
-    setShowPicker(false); // Optionally close the picker after selection
+  const onEmojiClick = (emojiData, event) => {
+  setNewMessage((prev) => prev + (emojiData.emoji || emojiData.native || ""));
+    // setShowPicker(false); // Optionally close the picker after selection
   };
 
   const getConversationId = (userId1, userId2) => {
@@ -283,10 +283,19 @@ const ChatSection = ({
           <div className="p-3 md:p-4 border-t flex-shrink-0">
             <form
               onSubmit={handleMessageSubmit}
-              className="flex items-center gap-2 md:gap-3"
+              className="flex items-center gap-2 md:gap-3 relative"
             >
-              <button onClick={() => setShowPicker(!showPicker)}>😊</button>
-              {showPicker && <Picker onEmojiClick={onEmojiClick} />}
+              <div className="relative">
+                <button type="button" onClick={() => setShowPicker(!showPicker)}>😊</button>
+                {showPicker && (
+                  <div
+                    className="absolute bottom-12 left-0 z-50"
+                    style={{ minWidth: 300 }}
+                  >
+                    <Picker onEmojiClick={onEmojiClick} />
+                  </div>
+                )}
+              </div>
               <button
                 type="button"
                 className="btn btn-circle btn-ghost btn-sm"
