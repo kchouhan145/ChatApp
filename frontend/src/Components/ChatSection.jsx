@@ -3,9 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner";
 import { SocketContext } from "../App";
+import Picker from 'emoji-picker-react';
 
-const ChatSection = ({ 
-  selectedUser, 
+const ChatSection = ({
+  selectedUser,
   authUser,
   lastMessages,
   setLastMessages,
@@ -24,6 +25,12 @@ const ChatSection = ({
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const socket = useContext(SocketContext);
+  const [showPicker, setShowPicker] = useState(false);
+
+  const onEmojiClick = (event, emojiObject) => {
+    setNewMessage(prevText => prevText + emojiObject.emoji);
+    setShowPicker(false); // Optionally close the picker after selection
+  };
 
   const getConversationId = (userId1, userId2) => {
     return [userId1, userId2].sort().join("_");
@@ -31,16 +38,16 @@ const ChatSection = ({
 
   const formatMessageTime = (timestamp) => {
     if (!timestamp) return "";
-    
+
     try {
       const date = new Date(timestamp);
       const now = new Date();
       const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-      
+
       if (isNaN(date.getTime())) {
         return timestamp.toString();
       }
-      
+
       if (diffDays === 0) {
         return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
       } else if (diffDays === 1) {
@@ -62,22 +69,22 @@ const ChatSection = ({
   const handleTyping = (e) => {
     const value = e.target.value;
     setNewMessage(value);
-    
+
     if (!socket || !authUser || !selectedUser) return;
-    
+
     const conversationId = getConversationId(authUser._id, selectedUser._id);
-    
+
     if ((value.length === 1 && !isTyping) || (value.length === 0 && isTyping)) {
       socket.emit("typing", {
         userId: authUser._id,
         conversationId,
         isTyping: value.length > 0
       });
-      
+
       setIsTyping(value.length > 0);
     }
   };
-  
+
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedUser) return;
@@ -119,7 +126,7 @@ const ChatSection = ({
       if (messagesEndRef.current) {
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
-  const res = await axios.post(`https://dczone.onrender.com/api/v1/message/send/${selectedUser?._id}`, {
+      const res = await axios.post(`https://dczone.onrender.com/api/v1/message/send/${selectedUser?._id}`, {
         message: messageToSend
       }, {
         headers: {
@@ -174,8 +181,8 @@ const ChatSection = ({
           <div className="py-2 px-3 md:px-4 border-b flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2">
               {showMobileChat && (
-                <button 
-                  onClick={() => toggleMobileView(false)} 
+                <button
+                  onClick={() => toggleMobileView(false)}
                   className="btn btn-ghost btn-sm btn-circle md:hidden mr-2"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -202,10 +209,10 @@ const ChatSection = ({
               </div>
             </div>
           </div>
-          
+
           {/* Messages */}
-          <div 
-            className="flex-1 overflow-y-auto px-3 py-2 md:px-4 md:py-3 flex flex-col gap-2 md:gap-3 scroll-smooth chat-messages-container" 
+          <div
+            className="flex-1 overflow-y-auto px-3 py-2 md:px-4 md:py-3 flex flex-col gap-2 md:gap-3 scroll-smooth chat-messages-container"
           >
             {loading ? (
               <div className="flex-1 flex justify-center items-center">
@@ -214,29 +221,29 @@ const ChatSection = ({
             ) : Array.isArray(messages) && messages.length > 0 ? (
               messages.map(msg => {
                 if (!msg || !msg._id) return null;
-                
+
                 const isSender = msg.senderId === authUser._id;
                 const isTemporary = typeof msg._id === "string" && msg._id.startsWith("temp_");
-                
+
                 return (
-                  <div 
-                    key={msg._id} 
+                  <div
+                    key={msg._id}
                     className={`chat ${isSender ? "chat-end" : "chat-start"} chat-arrow-fix`}
-                    style={{position: 'relative'}}
+                    style={{ position: 'relative' }}
                   >
-                    <div className="chat-image avatar" style={{position: 'absolute', [isSender ? 'right' : 'left']: '0px', top: '0px'}}>
+                    <div className="chat-image avatar" style={{ position: 'absolute', [isSender ? 'right' : 'left']: '0px', top: '0px' }}>
                       <div className="w-7 h-7 rounded-full">
-                        <img 
+                        <img
                           src={isSender
-                            ? authUser.profilePhoto 
-                            : selectedUser.profilePhoto} 
-                          alt="avatar" 
+                            ? authUser.profilePhoto
+                            : selectedUser.profilePhoto}
+                          alt="avatar"
                         />
                       </div>
                     </div>
-                    <div 
+                    <div
                       className={`chat-bubble ${isSender ? "chat-bubble-primary" : "bg-base-200"} py-2 px-3 min-h-0 ${isTemporary ? "opacity-70" : ""} shadow-sm`}
-                      style={{marginTop: '2px', [isSender ? 'marginRight' : 'marginLeft']: '2.5rem'}}
+                      style={{ marginTop: '2px', [isSender ? 'marginRight' : 'marginLeft']: '2.5rem' }}
                     >
                       {msg.message}
                       {isTemporary && (
@@ -245,7 +252,7 @@ const ChatSection = ({
                         </span>
                       )}
                     </div>
-                    <div className="chat-footer opacity-70 text-xs flex items-center gap-1" style={{[isSender ? 'marginRight' : 'marginLeft']: '2.5rem'}}>
+                    <div className="chat-footer opacity-70 text-xs flex items-center gap-1" style={{ [isSender ? 'marginRight' : 'marginLeft']: '2.5rem' }}>
                       {formatMessageTime(msg.createdAt)}
                       {isSender && (
                         <span className={isTemporary ? "hidden" : ""}>
@@ -271,27 +278,29 @@ const ChatSection = ({
             )}
             <div ref={messagesEndRef} />
           </div>
-          
+
           {/* Message Input */}
           <div className="p-3 md:p-4 border-t flex-shrink-0">
-            <form 
-              onSubmit={handleMessageSubmit} 
+            <form
+              onSubmit={handleMessageSubmit}
               className="flex items-center gap-2 md:gap-3"
             >
-              <button 
-                type="button" 
-                className="btn btn-circle btn-ghost btn-sm" 
-                onClick={()=>{toast.info(`This function is not implemented yet. Sorry @${authUser.username}`)}}
+              <button onClick={() => setShowPicker(!showPicker)}>😊</button>
+              {showPicker && <Picker onEmojiClick={onEmojiClick} />}
+              <button
+                type="button"
+                className="btn btn-circle btn-ghost btn-sm"
+                onClick={() => { toast.info(`This function is not implemented yet. Sorry @${authUser.username}`) }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                 </svg>
               </button>
               <div className="flex-1 relative">
-                <input 
-                  type="text" 
-                  className="input input-bordered w-full h-10 text-sm" 
-                  placeholder="Type your message here..." 
+                <input
+                  type="text"
+                  className="input input-bordered w-full h-10 text-sm"
+                  placeholder="Type your message here..."
                   value={newMessage}
                   onChange={handleTyping}
                 />
@@ -328,7 +337,7 @@ const ChatSection = ({
           <p className="text-xs md:text-sm opacity-70 text-center max-w-md mb-3">
             Select a conversation from the list or start a new chat by searching for users.
           </p>
-          <button 
+          <button
             className="btn btn-primary btn-sm md:btn-md"
             onClick={() => {
               if (showMobileChat) {
