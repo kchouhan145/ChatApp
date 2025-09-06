@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 const corsOption = {
   origin: [
-    "http://10.80.55.217:5173/",// if mobile server
+    "https://chat-app-kartik.vercel.app/",// vercel deployement
     "http://localhost:5173",   // if using Vite
     "http://localhost:3000",   // if using CRA
     "http://localhost:8080",   // your local test port
